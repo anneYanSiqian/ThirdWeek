@@ -1,0 +1,46 @@
+/**
+ * @param {number} numCourses
+ * @param {number[][]} prerequisites
+ * @return {number[]}
+ */
+var findOrder = function(numCourses, prerequisites) {
+    if (numCourses < 0) return false;
+    
+    if (prerequisites.length === 0) {
+        let i = 0;
+        while (i === numCourses) {
+            arr.push(i);
+            i++;
+        }
+    }
+    
+    let res = []; // 保存拓扑排序的结果
+    let queue = []; // 存储入度为0的节点
+    let degreeArr = new Array(numCourses).fill(0); //存储各个节点的入度
+    for (let item of prerequisites) {
+        degreeArr[item[0]]++
+    }
+    for (let i = 0; i < numCourses; i++) {
+        if (degreeArr[i] === 0) {
+            queue.push(i);
+        }
+    }
+    
+    while (queue.length > 0) {
+        let num = queue.shift();
+        res.push(num); // 把入度为0的点存进结果数组res
+        for (let item of prerequisites) {
+            if (item[1] === num) {
+                // 删除前面入度为0的点
+                // 则后面的点入度减1
+                degreeArr[item[0]]--;
+                if (degreeArr[item[0]] === 0) {
+                    // 如果入度减一后入度为0，则存进队列
+                    queue.push(item[0])
+                }
+            }
+        }
+    }
+    if(res.length != numCourses) return [];
+    return res;
+};
