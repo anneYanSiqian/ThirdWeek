@@ -1,0 +1,63 @@
+var Twitter = function() {
+    this.userList = [];
+    this.feedList = [];
+};
+
+/** 
+ * @param {number} userId 
+ * @param {number} tweetId
+ * @return {void}
+ */
+Twitter.prototype.postTweet = function(userId, tweetId) {
+    if (!this.userList[userId]) this.userList[userId] = [userId];
+    this.feedList.unshift([userId, tweetId]);
+};
+
+/** 
+ * @param {number} userId
+ * @return {number[]}
+ */
+Twitter.prototype.getNewsFeed = function(userId) {
+    let list = [];
+    const follows = this.userList[userId];
+    if (follows) {
+        list = this.feedList.map(item => {
+            if (follows.indexOf(item[0]) !== -1) return item[1];
+        }).filter(item => item).slice(0, 10);
+    }
+    return list;
+};
+
+/** 
+ * @param {number} followerId 
+ * @param {number} followeeId
+ * @return {void}
+ */
+Twitter.prototype.follow = function(followerId, followeeId) {
+    if (!this.userList[followerId]) {
+        this.userList[followerId] = [followerId,followeeId];
+    } else {
+        this.userList[followerId].push(followeeId);
+    }
+};
+
+/** 
+ * @param {number} followerId 
+ * @param {number} followeeId
+ * @return {void}
+ */
+Twitter.prototype.unfollow = function(followerId, followeeId) {
+    if (this.userList[followerId] && this.userList[followerId].indexOf(followeeId) !== -1 && followerId !== followeeId) {
+        var index = this.userList[followerId].indexOf(followeeId);
+        this.userList[followerId].splice(index, 1);
+    } 
+};
+
+/**
+ * Your Twitter object will be instantiated and called as such:
+ * var obj = new Twitter()
+ * obj.postTweet(userId,tweetId)
+ * var param_2 = obj.getNewsFeed(userId)
+ * obj.follow(followerId,followeeId)
+ * obj.unfollow(followerId,followeeId)
+ */
