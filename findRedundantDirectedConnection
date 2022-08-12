@@ -1,0 +1,55 @@
+/**
+ * @param {number[][]} edges
+ * @return {number[]}
+ */
+var findRedundantDirectedConnection = function(edges) {
+    const n = edges.length;
+    //初始化入度为0
+    const indegree = [];
+    for (let i=1; i<=n; i++) indegree[i] = 0;
+    const graph = [];
+    for (let i=1; i <= n; i++) graph[i] = [];
+    // 模板：加边
+    var addEdge = function(u, v) {
+        graph[u].push(v);
+    }
+    for (let e of edges) {
+        const u = e[0];
+        const v = e[1];
+        //出边数组加边
+        addEdge(u, v);
+        indegree[v] = indegree[v] + 1;
+    }
+    //倒顺逐个试探移除每一条边
+    edges.reverse();
+    for (let edge of edges) {
+        const u = edge[0];
+        const v = edge[1];
+        for (let i in graph[u]) if (graph[u][i] === v) graph[u].splice(i, 1);
+        indegree[v] -= 1;
+        if(valid(graph, indegree, n)) return [u, v];
+        addEdge(u, v);
+        indegree[v] += 1;
+    }
+    return [];
+};
+
+function valid(graph, indegree, n) {
+    let root = null;
+    for (let i in indegree) {
+        if (indegree[i] === 0) root = i;
+        if (indegree[i] > 1) return false;
+    }
+    if (root === null) return false;
+
+    const seen = [];
+    var dfs = function(seen, root, graph) {
+        seen.push(root);
+        if (!graph[root]) return;
+        for (let neighbor of graph[root]) {
+            if (seen.indexOf(neighbor) === -1) dfs(seen, neighbor, graph);
+        } 
+    }
+    dfs(seen, root, graph);
+    return seen.length === n;
+}
